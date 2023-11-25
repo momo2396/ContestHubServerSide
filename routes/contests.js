@@ -22,6 +22,16 @@ router.get('/single-contest/:id', async(req, res)=>{
     res.send(data);
 })
 
+router.get('/categories', async(req, res)=>{
+    const categories = [];
+    const data = await contestCollection.find({}).toArray();
+    data.forEach((c)=>{
+        if(!categories.includes(c.contestType)) categories.push(c.contestType);
+    })
+    categories.sort();
+    res.send(categories);
+})
+
 router.get('/my-created-contests/:email', async(req, res)=>{
     const query = {contestCreatorMail: req.params.email}
     const data = await contestCollection.find(query).toArray();
@@ -33,6 +43,7 @@ router.delete('/single-contest/:id', async(req, res)=>{
     const data = await contestCollection.deleteOne(query);
     res.send(data);
 })
+
 router.put('/single-contest/:id', async(req, res)=>{
     const updatedData = req.body;
     delete updatedData._id;
