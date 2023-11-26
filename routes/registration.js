@@ -19,12 +19,22 @@ router.get('/particular-contests/:email', async(req, res)=>{
     let data = [];
     registration.forEach((r)=>{
           allContest.forEach((a)=>{
-            // console.log(r.contestId, a._id.toString())
-            if(r.contestId === a._id.toString()) data.push(a)
+            if(r.contestId === a._id.toString()) data.push({contest: a, submitted: r.submitted})
           })
     })
     res.send(data);
 })
 
+router.put('/', async(req, res)=>{
+    const updatedData = req.body;
+    delete updatedData._id;
+    const query = {
+        userEmail: req?.body?.userEmail,
+        contestId: req?.body?.contestId
+    }
+    const updateDoc = {$set: updatedData}
+    const data = await registrationCollection.updateOne(query, updateDoc, {upsert: true});
+    res.send(data);
+})
 
 module.exports = router
