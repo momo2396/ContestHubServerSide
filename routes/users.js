@@ -20,4 +20,13 @@ router.get('/:id', async(req, res)=>{
     res.send(data);
 })
 
+router.put('/:id', async(req, res)=>{
+    const updatedData = req.body;
+    delete updatedData._id;
+    const query = {_id: new ObjectId(req.params.id)}
+    const updateDoc = {$set: updatedData}
+    const data = await userCollection.updateOne(query, updateDoc, {upsert: true});
+    res.send(data);
+})
+
 module.exports = router

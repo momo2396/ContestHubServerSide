@@ -22,27 +22,12 @@ router.get('/single-contest/:id', async(req, res)=>{
     res.send(data);
 })
 
-router.get('/categories', async(req, res)=>{
-    const categories = [];
-    const data = await contestCollection.find({}).toArray();
-    data.forEach((c)=>{
-        if(!categories.includes(c.contestType)) categories.push(c.contestType);
-    })
-    categories.sort();
-    res.send(categories);
-})
-
-router.get('/my-created-contests/:email', async(req, res)=>{
-    const query = {contestCreatorMail: req.params.email}
-    const data = await contestCollection.find(query).toArray();
-    res.send(data);
-})
-
 router.delete('/single-contest/:id', async(req, res)=>{
     const query = {_id: new ObjectId(req.params.id)}
     const data = await contestCollection.deleteOne(query);
     res.send(data);
 })
+
 
 router.put('/single-contest/:id', async(req, res)=>{
     const updatedData = req.body;
@@ -61,6 +46,22 @@ router.get('/popular-contests', async(req, res)=>{
 
 router.get('/single-category-contest', async(req, res)=>{
     const query = {contestType: req.query.contestType}
+    const data = await contestCollection.find(query).toArray();
+    res.send(data);
+})
+
+router.get('/categories', async(req, res)=>{
+    const categories = [];
+    const data = await contestCollection.find({}).toArray();
+    data.forEach((c)=>{
+        if(!categories.includes(c.contestType)) categories.push(c.contestType);
+    })
+    categories.sort();
+    res.send(categories);
+})
+
+router.get('/my-created-contests/:email', async(req, res)=>{
+    const query = {contestCreatorMail: req.params.email}
     const data = await contestCollection.find(query).toArray();
     res.send(data);
 })

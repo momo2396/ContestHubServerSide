@@ -5,10 +5,11 @@ const app = express();
 const port = process.env.PORT || 5000;
 require('dotenv').config()
 
-const { client } = require('./functions/databaseClient')
+const { client, connectDB } = require('./functions/databaseClient')
 const contestRoute = require('./routes/contests')
-const userRoute = require('./routes/users')
-
+const userRoute = require('./routes/users');
+const bannerImageRoute = require('./routes/bannerImage')
+const registeredContest = require('./routes/registration')
 app.use(cors());
 app.use(express.json());
 
@@ -21,15 +22,18 @@ async function run() {
     })
     app.use('/all-contests', contestRoute)
     app.use('/all-users', userRoute)
+    app.use('/banner-images',bannerImageRoute)
+    app.use('/register-contest', registeredContest)
 
   } finally {
-    // await client.close();
+    
   }
 }
 run().catch(console.dir);
 
 app.listen(port, async()=>{
     await client.connect();
+    // await connectDB();
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
     console.log(`Server is running on port ${port}`);
