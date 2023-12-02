@@ -18,6 +18,13 @@ router.get('/single-contest-submissions/:id', async(req, res)=>{
     res.send(result);
 })
 
+// router.get('/submitted-tasks/:email', async(req, res)=>{
+//     const query = {userEmail: req.params.email, submitted: true};
+//     const result = await registrationCollection.find(query).toArray();
+//     res.send(result);
+// })
+
+
 router.get('/particular-contests/:email', async(req, res)=>{
     const query = {userEmail: req.params.email};
     const registration = await registrationCollection.find(query).toArray();
@@ -25,10 +32,11 @@ router.get('/particular-contests/:email', async(req, res)=>{
     let data = [];
     registration.forEach((r)=>{
           allContest.forEach((a)=>{
-            if(r.contestId === a._id.toString()) data.push({contest: a, submitted: r.submitted})
+            if(r.contestId === a._id.toString()) data.push({...r, contest: a})
           })
     })
-    res.send(data);
+    const sortedArray = data.sort((a, b) => new Date(a?.contest?.contestDeadline) - new Date(b?.contest?.contestDeadline))
+    res.send(sortedArray);
 })
 
 router.put('/', async(req, res)=>{
