@@ -50,6 +50,16 @@ router.put('/', async(req, res)=>{
     const data = await registrationCollection.updateOne(query, updateDoc, {upsert: true});
     res.send(data);
 })
+router.get ('/winning-ratio/:email', async(req, res)=>{
+    const email = req.params.email;
+    const contest = await contestCollection.find({winnerEmail: email}).toArray();
+    const registration = await registrationCollection.find({userEmail:email, submitted:true}).toArray();
+    const data = {
+        attempted: registration.length,
+        win: contest.length
+    }
+    res.send(data)
+})
 router.put('/set-winner/:id', async(req, res)=>{
     const updatedData = {
         ...req.body, 
