@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 // functions import
-const { contestCollection } = require('../functions/databaseClient');
+const { contestCollection, userCollection } = require('../functions/databaseClient');
 const { ObjectId } = require('mongodb');
 
 router.post('/', async(req, res)=>{
@@ -38,7 +38,26 @@ router.put('/single-contest/:id', async(req, res)=>{
     res.send(data);
 })
 
-
+router.get('/all-winners', async(req, res)=>{
+    const allUsers = await userCollection.find({}).toArray();
+    const allContests = await contestCollection.find({}).toArray();
+    const winners={};
+    allUsers.forEach((a)=>{
+        winners[a.userEmail] = {
+            won:0, 
+            user: a
+        }
+    })
+    allContests.forEach((a)=>{
+        if(a.winnerEmail)
+        winners[a.winnerEmail] = {
+           ...winners[a.winnerEmail], won: winners[a.winnerEmail].won+1
+        }
+    })
+    const winnerArray = Object.values(winners)
+    const sortedWinners = winnerArray.sort((a,b)=>b.won - a.won)
+    res.send(sortedWinners)
+})
 router.get('/popular-contests', async(req, res)=>{
     const data = await contestCollection.find({}).sort({participationCount: -1}).limit(5).toArray();
     res.send(data);
