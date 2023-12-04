@@ -9,6 +9,15 @@ router.post('/', async(req, res)=>{
     const data = req.body;
     console.log(data)
     const result = await registrationCollection.insertOne(data);
+    const exist = await contestCollection.findOne({_id: new ObjectId(data?.contestId)})
+    delete exist._id;
+    const updateDoc = {
+        $set : {
+            ...exist,
+            participatedCount : exist.participatedCount+1
+        }
+    }
+    const updatedData = await contestCollection.updateOne({_id: new ObjectId(data?.contestId)}, updateDoc, {upsert:true})
     res.send(result);
 })
 
@@ -71,7 +80,8 @@ router.put('/set-winner/:id', async(req, res)=>{
     const winnerDoc = {
         $set: {
             winnerImage: user?.photoURL,
-            winnerName: user?.userName
+            winnerName: user?.userName,
+            winnerEmail:user?.userEmail
         }
     }
     const contest = await contestCollection.updateOne({_id: new ObjectId(req.body.contestId)}, winnerDoc, {upsert: true});

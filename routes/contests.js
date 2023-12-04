@@ -65,16 +65,18 @@ router.get('/popular-contests', async(req, res)=>{
 })
 
 router.get('/single-category-contest', async(req, res)=>{
-    const query = {contestType: req.query.contestType}
-    const data = await contestCollection.find(query).toArray();
-    res.send(data);
+    // const query = {contestType: req.query.contestType}
+
+    const data = await contestCollection.find({}).toArray();
+    let temp = data?.filter(d=>d?.contestType?.toLowerCase() === req.query.contestType && d?.confirmed === true)
+    res.send(temp);
 })
 
 router.get('/categories', async(req, res)=>{
     const categories = [];
     const data = await contestCollection.find({}).toArray();
     data.forEach((c)=>{
-        if(!categories.includes(c.contestType)) categories.push(c.contestType);
+        if(!categories.includes(c.contestType) && c?.confirmed === true) categories.push(c.contestType);
     })
     categories.sort();
     res.send(categories);
