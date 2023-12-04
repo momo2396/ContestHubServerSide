@@ -3,6 +3,7 @@ const router = express.Router()
 
 const { userCollection } = require('../functions/databaseClient');
 const { ObjectId } = require('mongodb');
+const genToken = require('../functions/genToken');
 
 router.post('/', async(req, res)=>{
     const data = req.body;
@@ -21,7 +22,8 @@ router.get('/', async(req, res)=>{
 })
 router.get('/:email', async(req, res)=>{
     const data = await userCollection.findOne({userEmail: req.params.email});
-    res.send(data);
+    const token = await genToken({userEmail: data?.userEmail, status:data?.status})
+    res.send({...data, token});
 })
 
 router.put('/:id', async(req, res)=>{

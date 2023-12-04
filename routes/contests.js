@@ -4,6 +4,7 @@ const router = express.Router()
 // functions import
 const { contestCollection, userCollection } = require('../functions/databaseClient');
 const { ObjectId } = require('mongodb');
+const checkToken = require('../functions/checkToken');
 
 router.post('/', async(req, res)=>{
     const data = req.body;
@@ -80,9 +81,18 @@ router.get('/categories', async(req, res)=>{
 })
 
 router.get('/my-created-contests/:email', async(req, res)=>{
-    const query = {contestCreatorMail: req.params.email}
-    const data = await contestCollection.find(query).toArray();
-    res.send(data);
+  
+    const payload = await checkToken(req.headers.authorization);
+    if(payload.userEmail===req.params.email){
+        const query = {contestCreatorMail: req.params.email}
+        const data = await contestCollection.find(query).toArray();
+        res.send(data);
+    }
+   else{
+    res.send({
+        message: "You are unauthorized"
+    })
+   }
 })
 
 module.exports = router

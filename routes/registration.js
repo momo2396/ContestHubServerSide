@@ -18,11 +18,7 @@ router.get('/single-contest-submissions/:id', async(req, res)=>{
     res.send(result);
 })
 
-// router.get('/submitted-tasks/:email', async(req, res)=>{
-//     const query = {userEmail: req.params.email, submitted: true};
-//     const result = await registrationCollection.find(query).toArray();
-//     res.send(result);
-// })
+
 
 
 router.get('/particular-contests/:email', async(req, res)=>{
